@@ -1,9 +1,9 @@
 {
 	"compilerOptions": {
+		"strict": true,
+
 		"rootDir": "src",
 		"outDir": ".",
-
-		"baseUrl": "src",
 
 		"lib": ["ESNext"],
 		"target": "ESNext",
@@ -11,8 +11,13 @@
 		"moduleDetection": "force",
 		
 		"plugins": [
-			{"transform": "./other/scriptable_transformer.ts", "after": true}
-		]
+			{"transform": "./src/transformer/scriptable-transformer.ts", "after": true}
+		],
+
+		"baseUrl": "src",
+		"paths": {
+			"@/*": ["./*"]
+		}
 	},
 	"include": ["src/**/*", "scriptable.d.ts"],
 	"exclude": []
