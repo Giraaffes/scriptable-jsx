@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"rootDir": "src",
+		"outDir": ".",
+
+		"baseUrl": "src",
+
+		"lib": ["ESNext"],
+		"target": "ESNext",
+		"module": "Preserve",
+		"moduleDetection": "force",
+		
+		"plugins": [
+			{"transform": "./other/scriptable_transformer.ts", "after": true}
+		]
+	},
+	"include": ["src/**/*", "scriptable.d.ts"],
+	"exclude": []
+}
