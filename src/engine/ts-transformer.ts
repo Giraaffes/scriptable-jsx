@@ -1,5 +1,5 @@
-import ts, { factory as fct } from "typescript";
-import tsp from "ts-patch";
+import ts, { factory as fct } from 'typescript';
+import tsp from 'ts-patch';
 
 //** Types/helpers **//
 
@@ -37,7 +37,7 @@ function createScriptableImport(binds: ts.BindingElement[], moduleSpecifier: ts.
 			fct.createObjectBindingPattern(binds),
 			undefined, undefined,
 			fct.createCallExpression(
-				fct.createIdentifier("importModule"), undefined, [moduleSpecifier]
+				fct.createIdentifier('importModule'), undefined, [moduleSpecifier]
 			)
 		)], ts.NodeFlags.Const
 	));
@@ -48,9 +48,9 @@ function createScriptableDefaultExport(expression: ts.Expression): ts.Statement
 	return fct.createExpressionStatement(fct.createBinaryExpression(
 		fct.createElementAccessExpression(
 			fct.createPropertyAccessExpression(
-				fct.createIdentifier("module"), fct.createIdentifier("exports")
+				fct.createIdentifier('module'), fct.createIdentifier('exports')
 			),
-			fct.createStringLiteral("__default__")
+			fct.createStringLiteral('__default__')
 		),
 		fct.createToken(ts.SyntaxKind.EqualsToken),
 		expression
@@ -61,7 +61,7 @@ function createScriptableNamedExports(namedExports: NamedExportData[]): ts.State
 {
 	return [fct.createExpressionStatement(fct.createBinaryExpression(
 		fct.createPropertyAccessExpression(
-			fct.createIdentifier("module"), fct.createIdentifier("exports")
+			fct.createIdentifier('module'), fct.createIdentifier('exports')
 		),
 		fct.createToken(ts.SyntaxKind.EqualsToken),
 		fct.createObjectLiteralExpression(namedExports.map(
@@ -86,7 +86,7 @@ function transformImportDeclaration(ctx: TransformerContext, node: ts.ImportDecl
 
 	if (node.importClause.name) {
 		binds.push(fct.createBindingElement(
-			undefined, fct.createIdentifier("__default__"), node.importClause.name, undefined
+			undefined, fct.createIdentifier('__default__'), node.importClause.name, undefined
 		));
 	}
 
@@ -115,14 +115,14 @@ function transformExportAssignment(ctx: TransformerContext, node: ts.ExportAssig
 }
 
 // Strips all non-default exports (`export ...`)
-// and handles non-module exports (`export { ... }` but not `export ... from "..."`)
+// and handles non-module exports (`export { ... }` but not `export ... from '...'`)
 function transformExportDeclaration(ctx: TransformerContext, node: ts.ExportDeclaration): ts.Node[]
 {
 	const isModuleReexport = (node.moduleSpecifier || !node.exportClause || !ts.isNamedExports(node.exportClause));
 	if (isModuleReexport) return [];
 
 	for (const specifier of node.exportClause.elements) {
-		if (specifier.propertyName && ts.isIdentifier(specifier.name) && specifier.name.text == "default") {
+		if (specifier.propertyName && ts.isIdentifier(specifier.name) && specifier.name.text == 'default') {
 			ctx.defaultExport = specifier.propertyName;
 		} else {
 			ctx.namedExports.push({ name: specifier.name, propertyName: specifier.propertyName });

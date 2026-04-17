@@ -1,0 +1,5 @@
+[ ] Move from local ts-patch approach to CLI tool
+[ ] Setup package.json properly
+[ ] Implement props
+[ ] Create template
+[ ] Make a proper readme

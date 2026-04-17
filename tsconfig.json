@@ -2,23 +2,18 @@
 	"compilerOptions": {
 		"strict": true,
 
-		"rootDir": "src",
-		"outDir": ".",
-
 		"lib": ["ESNext"],
 		"target": "ESNext",
 		"module": "Preserve",
 		"moduleDetection": "force",
-		
-		"plugins": [
-			{"transform": "./src/transformer/scriptable-transformer.ts", "after": true}
-		],
 
 		"baseUrl": "src",
-		"paths": {
-			"@/*": ["./*"]
-		}
+		
+    "jsx": "react-jsx",
+    "jsxImportSource": "engine/jsx-runtime",
+		"plugins": [
+			{"transform": "engine/ts-transformer.ts", "after": true}
+		]
 	},
-	"include": ["src/**/*", "scriptable.d.ts"],
-	"exclude": []
+	"include": ["src/**/*"]
 }
