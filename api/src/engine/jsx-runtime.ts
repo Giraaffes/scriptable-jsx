@@ -1,5 +1,5 @@
-import { createComponent, fragmentTagSymbol } from "@/jsx";
-import { Component, ComponentProps, DateComponentProps, ImageComponentProps } from "@/types";
+import { createComponent, fragmentTagSymbol, JSXChildren } from "@/jsx.js";
+import { Component, DateComponent, ImageComponent, SpacerComponent, StackComponent, TextComponent, WidgetComponent } from "@/types.js";
 
 export const jsx = (tag: any, allProps: any) => {
   const { children, ...props } = allProps ?? {};
@@ -12,17 +12,17 @@ export namespace JSX {
   export type Element = Component;
 
   export interface IntrinsicElements {
-    widget: ComponentProps & {
-      children?: Element | Element[];
+    widget: WidgetComponent['props'] & {
+      children?: JSXChildren
     };
-    stack: ComponentProps & {
-      children?: Element | Element[];
+    stack: StackComponent['props'] & {
+      children?: JSXChildren
     };
-    spacer: ComponentProps;
-    image: ImageComponentProps;
-    text: ComponentProps & {
+    text: TextComponent['props'] & {
       children?: string | number | (string | number)[];
     };
-    date: DateComponentProps;
+    image: ImageComponent['props'];
+    date: DateComponent['props'];
+    spacer: SpacerComponent['props'];
   }
 }

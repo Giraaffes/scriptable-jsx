@@ -83,8 +83,10 @@ async function main()
     declaration: false
   };
   const program = ts.createProgram(fileNames, compilerOptions);
-  const diagnostics = ts.getPreEmitDiagnostics(program);
 
+  // todo metadata
+
+  const diagnostics = ts.getPreEmitDiagnostics(program);
   for (const diagnostic of diagnostics) {
     let errorStr = '';
 

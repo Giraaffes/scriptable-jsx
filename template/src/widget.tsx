@@ -1,8 +1,13 @@
-import { jsx as _jsx } from 'scriptable-jsx/jsx-runtime';
-function test() {
+import { render } from 'scriptable-jsx';
+
+function Root() {
 	return (
-		<widget onMount={() => { console.log("a"); }}>
-			
+		<widget backgroundColor={new Color("#ff0000")}>
+			<text>Hi!</text>
 		</widget>
 	)
 }
+
+const widget = render(Root());
+Script.setWidget(widget);
+Script.complete();

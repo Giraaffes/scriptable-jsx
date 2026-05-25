@@ -1,14 +1,19 @@
-import { ContainerScriptableElement, DateComponentProps, ComponentFunction, ImageComponentProps, NonRootComponent, RootComponent, Component, ComponentProps, ComponentTag, ScriptableElement } from '@/types';
+import { BaseComponentProps, Component, ComponentTag, ContainerScriptableElement, DateComponent, FragmentComponent, ImageComponent, NonWidgetComponent, ScriptableElement, SpacerComponent, WidgetComponent } from "@/types.js";
+import { assignProps } from "@/utils.js";
 
 export const fragmentTagSymbol = Symbol.for('fragment');
 export type FragmentTag = typeof fragmentTagSymbol;
 
+export type JSXChildren = string | number | Component | (string | number | Component)[];
+export type JSXComponentFunction = (args: { children: JSXChildren }) => Component;
+
 export function createComponent(
-	fnOrTag: ComponentFunction | ComponentTag | FragmentTag, 
-	props: ComponentProps, 
-	children: (string | Component)[]
+	fnOrTag: JSXComponentFunction | ComponentTag, 
+	props: BaseComponentProps,
+	children: JSXChildren
 ): Component
 {
+
 	if (typeof fnOrTag === 'function') {
 		return fnOrTag({
 			...props,
@@ -16,13 +21,15 @@ export function createComponent(
 		});
 	}
 	else if (fnOrTag == 'widget' || fnOrTag == 'stack' || fnOrTag === fragmentTagSymbol) {
-		let componentChildren: NonRootComponent[] = [];
-		for (let child of children) {
-			if (typeof child === 'string') {
+		const childrenList = Array.isArray(children) ? children : [children];
+
+		let componentChildren: NonWidgetComponent[] = [];
+		for (let child of childrenList) {
+			if (typeof child === 'string' || typeof child == 'number') {
 				componentChildren.push({
 					tag: 'text',
 					props: {},
-					content: child
+					content: String(child)
 				});
 			} else if (child.tag == 'widget') {
 				throw new Error('Widget component may only be placed at root level');
@@ -45,8 +52,17 @@ export function createComponent(
 		}
 	}
 	else if (fnOrTag == 'text') {
-		const stringChildren = children.filter((child): child is string => (typeof child === 'string'));
-		const content = stringChildren.join('');
+		let content: string;
+		if (Array.isArray(children)) {
+			const stringChildren = children
+				.filter((child) => (typeof child === 'string' || typeof child == 'number'))
+				.map((child) => String(child));
+			content = stringChildren.join('');
+		} else if (typeof children === 'string' || typeof children == 'number') {
+			content = String(children);
+		} else {
+			content = '';
+		}
 		return {
 			tag: fnOrTag,
 			props: props,
@@ -57,20 +73,20 @@ export function createComponent(
 		if (!('image' in props)) throw new Error('Must specify `image` prop on image component');
 		return {
 			tag: fnOrTag,
-			props: props as ImageComponentProps
+			props: props as ImageComponent['props']
 		};
 	}
 	else if (fnOrTag == 'date') {
 		if (!('date' in props)) throw new Error('Must specify `date` prop on date component');
 		return {
 			tag: fnOrTag,
-			props: props as DateComponentProps
+			props: props as DateComponent['props']
 		};
 	}
 	else if (fnOrTag == 'spacer') {
 		return {
 			tag: fnOrTag,
-			props: props
+			props: props as SpacerComponent['props']
 		};
 	}
 
@@ -98,9 +114,154 @@ function createElementFromComponent(
 	} else if (component.tag == 'date') {
 		return parent.addDate(component.props.date);
 	} else if (component.tag == 'spacer') {
-		return parent.addSpacer();
+		return parent.addSpacer(component.props.length);
 	}
 	return null as never;
+}
+
+function applyComponentPropsToElement(
+	element: ScriptableElement,
+	component: Exclude<Component, FragmentComponent>
+): void
+{
+	if (component.tag == 'widget') {
+		const el = element as ListWidget;
+		assignProps(el, component.props, [
+			'backgroundColor',
+			'backgroundImage',
+			'backgroundGradient',
+			'addAccessoryWidgetBackground',
+			'spacing',
+			'url',
+			'refreshAfterDate'
+		]);
+
+		const { padding } = component.props;
+		if (padding != null) {
+			const { top, leading, bottom, trailing } = padding;
+			el.setPadding(top, leading, bottom, trailing);
+		}
+	}
+	else if (component.tag == 'stack') {
+		const el = element as WidgetStack;
+		assignProps(el, component.props, [
+			'backgroundColor',
+			'backgroundImage',
+			'backgroundGradient',
+			'spacing',
+			'size',
+			'cornerRadius',
+			'borderWidth',
+			'borderColor',
+			'url'
+		]);
+
+		const { padding, layoutDirection, alignContent } = component.props;
+		if (padding != null) {
+			const { top, leading, bottom, trailing } = padding;
+			el.setPadding(top, leading, bottom, trailing);
+		}
+		if (layoutDirection == 'horizontal') {
+			el.layoutHorizontally();
+		} else if (layoutDirection == 'vertical') {
+			el.layoutVertically();
+		}
+		if (alignContent == 'bottom') {
+			el.bottomAlignContent();
+		} else if (alignContent == 'center') {
+			el.centerAlignContent();
+		} else if (alignContent == 'top') {
+			el.topAlignContent();
+		}
+	}
+	else if (component.tag == 'text') {
+		const el = element as WidgetText;
+		assignProps(el, component.props, [
+			'textColor',
+			'font',
+			'textOpacity',
+			'lineLimit',
+			'minimumScaleFactor',
+			'shadowColor',
+			'shadowRadius',
+			'shadowOffset',
+			'url',
+		]);
+
+		const { alignText } = component.props;
+		if (alignText == 'left') {
+			el.leftAlignText();
+		} else if (alignText == 'center') {
+			el.centerAlignText();
+		} else if (alignText == 'right') {
+			el.rightAlignText();
+		}
+	}
+	else if (component.tag == 'image') {
+		const el = element as WidgetImage;
+		assignProps(el, component.props, [
+			'resizable',
+			'imageSize',
+			'imageOpacity',
+			'cornerRadius',
+			'borderWidth',
+			'borderColor',
+			'containerRelativeShape',
+			'tintColor',
+			'url',
+		]);
+
+		const { alignImage, contentMode } = component.props;
+		if (alignImage == 'left') {
+			el.leftAlignImage();
+		} else if (alignImage == 'center') {
+			el.centerAlignImage();
+		} else if (alignImage == 'right') {
+			el.rightAlignImage();
+		}
+		if (contentMode == 'fitting') {
+			el.applyFittingContentMode();
+		} else if (contentMode == 'filling') {
+			el.applyFillingContentMode();
+		}
+	}
+	else if (component.tag == 'date') {
+		const el = element as WidgetDate;
+		assignProps(el, component.props, [
+			'textColor',
+			'font',
+			'textOpacity',
+			'lineLimit',
+			'minimumScaleFactor',
+			'shadowColor',
+			'shadowRadius',
+			'shadowOffset',
+			'url',
+		]);
+
+		const { alignText, style } = component.props;
+		if (alignText == 'left') {
+			el.leftAlignText();
+		} else if (alignText == 'center') {
+			el.centerAlignText();
+		} else if (alignText == 'right') {
+			el.rightAlignText();
+		}
+		if (style == 'time') {
+			el.applyTimeStyle();
+		} else if (style == 'date') {
+			el.applyDateStyle();
+		} else if (style == 'relative') {
+			el.applyRelativeStyle();
+		} else if (style == 'offset') {
+			el.applyOffsetStyle();
+		} else if (style == 'timer') {
+			el.applyTimerStyle();
+		}
+	}
+	else if (component.tag == 'spacer') {
+		// No props to apply
+	}
 }
 
 export function renderComponent(
@@ -110,7 +271,9 @@ export function renderComponent(
 {
 	let element = createElementFromComponent(parent, component);
 
-	// todo props
+	if (component.tag !== fragmentTagSymbol) {
+		applyComponentPropsToElement(element, component);
+	}
 
 	if (component.tag == 'widget' || component.tag == 'stack' || component.tag === fragmentTagSymbol) {
 		for (let child of component.children) {
@@ -118,14 +281,9 @@ export function renderComponent(
 		}
 	}
 
-	if ('props' in component && component.props.onMount) {
+	if (component.tag !== fragmentTagSymbol && component.props.onMount) {
 		component.props.onMount(element);
 	}
 
 	return element;
-}
-
-export function renderRoot(root: RootComponent) {
-	if (root.tag != 'widget') throw new Error('Root node must be widget component');
-	return renderComponent(null, root);
 }

@@ -1,5 +1,9 @@
 [X] Move from local ts-patch approach to CLI tool
 [X] Setup package.json and tsconfig.json properly
 [X] Create template (project with proper tsconfig.json and so forth)
-[ ] Implement props
+[X] Implement props
+[ ] Implement scripts metadata
+[ ] Double check index.ts
+[ ] Check if my scriptable.d.ts is different from the original one, and add a notice?
+[ ] Build project with ESBuild, Turbopack or similar?
 [ ] Make a proper readme
