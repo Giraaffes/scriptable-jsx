@@ -1,4 +1,4 @@
-import { ContainerScriptableElement, DateComponentProps, ComponentFunction, ImageComponentProps, NonRootComponent, RootComponent, Component, ComponentProps, ComponentTag, ScriptableElement } from 'types';
+import { ContainerScriptableElement, DateComponentProps, ComponentFunction, ImageComponentProps, NonRootComponent, RootComponent, Component, ComponentProps, ComponentTag, ScriptableElement } from '@/types';
 
 export const fragmentTagSymbol = Symbol.for('fragment');
 export type FragmentTag = typeof fragmentTagSymbol;

@@ -1,5 +1,5 @@
-[ ] Move from local ts-patch approach to CLI tool
-[ ] Setup package.json properly
+[X] Move from local ts-patch approach to CLI tool
+[X] Setup package.json and tsconfig.json properly
+[X] Create template (project with proper tsconfig.json and so forth)
 [ ] Implement props
-[ ] Create template
 [ ] Make a proper readme

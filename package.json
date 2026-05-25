@@ -1,6 +1,40 @@
 {
-	"devDependencies": {
-		"ts-patch": "^3.3.0",
-		"typescript": "^6.0.2"
-	}
+  "name": "scriptable-jsx",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "build:api": "tsc -p api/tsconfig.json && tsc-alias -p api/tsconfig.json && shx cp api/src/env.d.ts api/dist/env.d.ts",
+    "build:cli": "tsc -p cli/tsconfig.json",
+    "build": "npm run build:api && npm run build:cli",
+    "prepack": "npm run build"
+  },
+  "files": [
+    "./api/dist",
+    "./cli/dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./api/dist/index.d.ts",
+      "default": "./api/dist/index.js"
+    },
+    "./jsx-runtime": {
+      "types": "./api/dist/engine/jsx-runtime.d.js",
+      "default": "./api/dist/engine/jsx-runtime.js"
+    },
+    "./env": {
+      "types": "./api/dist/env.d.ts"
+    }
+  },
+  "bin": {
+    "scriptable-jsx": "./cli/dist/cli.js"
+  },
+  "dependencies": {
+    "esbuild": "^0.28.0",
+    "typescript": "^6.0.2"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1",
+    "shx": "^0.4.0",
+    "tsc-alias": "^1.8.17"
+  }
 }

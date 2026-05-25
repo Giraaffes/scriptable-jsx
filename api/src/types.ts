@@ -1,4 +1,4 @@
-import { fragmentTagSymbol } from 'jsx';
+import { fragmentTagSymbol } from '@/jsx';
 
 export type ScriptableElement = ListWidget | WidgetStack | WidgetSpacer | WidgetImage | WidgetText | WidgetDate;
 export type ContainerScriptableElement = ListWidget | WidgetStack;

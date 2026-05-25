@@ -1,5 +1,4 @@
 import ts, { factory as fct } from 'typescript';
-import tsp from 'ts-patch';
 
 //** Types/helpers **//
 
@@ -278,7 +277,9 @@ function transformSource(tsCtx: ts.TransformationContext, source: ts.SourceFile)
 
 //** Transformer hook **//
 
-export default (program: ts.Program, config: tsp.PluginConfig, extras: tsp.TransformerExtras) => {
+export type TransformerHook = (program: ts.Program) => ts.TransformerFactory<ts.SourceFile>;
+
+export const hook: TransformerHook = (program: ts.Program) => {
 	return (context: ts.TransformationContext) => {
 		return (source: ts.SourceFile) => {
 			return transformSource(context, source);

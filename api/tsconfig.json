@@ -1,0 +1,19 @@
+{
+	"include": ["src/**/*"],
+	"compilerOptions": {
+		"strict": true,
+
+		"rootDir": "./src",
+		"outDir": "./dist",
+		"declaration": true,
+		"paths": {
+			"@/*": ["./src/*"]
+		},
+
+		"target": "es2020",
+		"lib": ["es2020"],
+		"types": [],
+		"module": "preserve",
+		"esModuleInterop": true
+	}
+}
